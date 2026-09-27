@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="ALL" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="5f59bad6-f6b9-4799-8674-82f8d6fb4639" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/PYTHON PROJECTS.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PATTAP.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
+  <component name="NextEditCompletionFeaturesState">
+    <decayedCancelled>
+      <entry key="MS100" value="1.6719927240677545E-6" />
+      <entry key="MS500" value="0.06992731881473195" />
+      <entry key="S2" value="0.5142351027541845" />
+      <entry key="S5" value="0.7664162205882957" />
+      <entry key="S10" value="0.8754523604951937" />
+      <entry key="S30" value="0.9687554851664291" />
+      <entry key="S60" value="1.2631589506537497" />
+      <entry key="M2" value="3.0329398922620734" />
+      <entry key="M5" value="14.131213117802357" />
+      <entry key="M10" value="37.33179884369354" />
+      <entry key="M15" value="57.407887244073656" />
+      <entry key="M30" value="94.89692481994588" />
+      <entry key="H1" value="125.70996413492999" />
+      <entry key="H2" value="145.80963434935686" />
+      <entry key="H4" value="157.33930463262453" />
+      <entry key="D1" value="167.80624095506482" />
+      <entry key="W1" value="169.68448726104347" />
+    </decayedCancelled>
+    <decayedSelected>
+      <entry key="MS100" value="1.0" />
+      <entry key="MS500" value="1.0" />
+      <entry key="S2" value="1.0" />
+      <entry key="S5" value="1.000000000041582" />
+      <entry key="S10" value="1.0000100806816499" />
+      <entry key="S30" value="1.0558021612554649" />
+      <entry key="S60" value="1.5729312557773731" />
+      <entry key="M2" value="3.2161656042561235" />
+      <entry key="M5" value="8.34229088506569" />
+      <entry key="M10" value="14.879950224029818" />
+      <entry key="M15" value="19.080338964588698" />
+      <entry key="M30" value="25.342710435209554" />
+      <entry key="H1" value="29.63163322294508" />
+      <entry key="H2" value="32.16265299351805" />
+      <entry key="H4" value="33.5404612646032" />
+      <entry key="D1" value="34.75083391884322" />
+      <entry key="W1" value="34.96425696013698" />
+    </decayedSelected>
+    <decayedShown>
+      <entry key="MS100" value="1.7673264732176225E-6" />
+      <entry key="MS500" value="0.07142501883821498" />
+      <entry key="S2" value="0.6793485214405113" />
+      <entry key="S5" value="1.2521131834547226" />
+      <entry key="S10" value="1.5722565280788383" />
+      <entry key="S30" value="1.9093251477644715" />
+      <entry key="S60" value="2.766492936141147" />
+      <entry key="M2" value="6.1915817716527615" />
+      <entry key="M5" value="22.403503068715104" />
+      <entry key="M10" value="52.134483732519406" />
+      <entry key="M15" value="76.41542936777063" />
+      <entry key="M30" value="120.18555761860436" />
+      <entry key="H1" value="155.30796874160103" />
+      <entry key="H2" value="177.95343765836796" />
+      <entry key="H4" value="190.86977375233633" />
+      <entry key="D1" value="202.55532521353467" />
+      <entry key="W1" value="204.64849212924642" />
+    </decayedShown>
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 8,
+  &quot;fromUser&quot;: false
+}</component>
+  <component name="ProjectId" id="3JuNFj0tbk7SjS80InPhzkRTgjz" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Python.PATTAP.executor": "Run",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "git-widget-placeholder": "master",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "D:/(D) Program files/PATTAP",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "python.packages.toolwindow.project.migrated.to.right.top.v2": "true",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
+  }
+}]]></component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-python-sdk-73a66231627c-5bd6d13a2a75-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-262.10968.92" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="5f59bad6-f6b9-4799-8674-82f8d6fb4639" name="Changes" comment="" />
+      <created>1790506891179</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1790506891179</updated>
+      <workItem from="1790510975603" duration="970000" />
+      <workItem from="1790512039435" duration="2417000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/PATTAP$PATTAP.coverage" NAME="PATTAP Coverage Results" MODIFIED="1790514069255" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+  </component>
+</project>
