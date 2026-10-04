@@ -1,75 +1,72 @@
 from tkinter import *
-import random
+
+# ---------- Screen switching ----------
+def start_game(selected_mode):
+    menu_frame.pack_forget()
+    game_frame.pack(fill=BOTH, expand=True)
 
 
-def next_turn(row, column):
-    global player
-
-    if buttons[row][column]['text'] == "" and check_winner() is False:
-        buttons[row][column]['text'] = player
-
-        result = check_winner()
-
-        if result is False:
-            player = players[0] if player == players[1] else players[1]
-            label.config(text=(player + " turn"))
-        elif result is True:
-            label.config(text=(player + " WINS!"))
-        elif result == "TIE":
-            label.config(text=("TIE"))
+def back_to_menu():
+    game_frame.pack_forget()
+    menu_frame.pack(fill=BOTH, expand=True)
 
 
-def check_winner():
-    # Check rows
-    for row in range(3):
-        if buttons[row][0]['text'] == buttons[row][1]['text'] == buttons[row][2]['text'] != "":
-            return True
-
-    # Check columns
-    for column in range(3):
-        if buttons[0][column]['text'] == buttons[1][column]['text'] == buttons[2][column]['text'] != "":
-            return True
-
-    # Check for tie (no empty spaces left)
-    for row in range(3):
-        for column in range(3):
-            if buttons[row][column]['text'] == "":
-                return False
-
-    return "TIE"
-
-
-def empty_space():
+# ---------- Placeholder handlers ----------
+def on_click(row, column):
     pass
 
 
-def new_game():
+def next_action():
     pass
 
 
+# ---------- WINDOW ----------
 window = Tk()
 window.title("PAT/TAP")
-window.geometry("400x400")
+window.geometry("460x560")
 
-players = ["P", "T"]
-player = random.choice(players)
-buttons = [[0, 0, 0],
-           [0, 0, 0],
-           [0, 0, 0]]
+# ---------- INTRO / MENU SCREEN ----------
+menu_frame = Frame(window)
+menu_frame.pack(fill=BOTH, expand=True)
 
-label = Label(text=player + " turn", font=("Arial", 25))
-label.pack(side=TOP)
+Label(menu_frame, text="PAT/TAP", font=("Arial", 44, "bold")).pack(pady=(90, 50))
 
-reset_button = Button(text="Restart", font=("Arial", 15), command=new_game)
-reset_button.pack(side=BOTTOM)
+Button(menu_frame, text="Solo", font=("Arial", 18), width=14,
+       command=lambda: start_game("solo")).pack(pady=8)
+Button(menu_frame, text="Pass & Play", font=("Arial", 18), width=14,
+       command=lambda: start_game("pass")).pack(pady=8)
 
-frame = Frame(window)
-frame.pack()
+# ---------- Game screen (hidden until a mode is picked) ----------
+game_frame = Frame(window)
 
-for row in range(3):
-    for column in range(3):
-        buttons[row][column] = Button(frame, text="", font=("Arial", 15), width=5, height=2,
-                                      command=lambda row=row, column=column: next_turn(row, column))
+round_label = Label(game_frame, text="Round 1 / 3", font=("Arial", 16, "bold"))
+round_label.pack(pady=(10, 0))
+
+score_label = Label(game_frame, text="Player 1 (PAT): 0     Player 2 (TAP): 0", font=("Arial", 13))
+score_label.pack()
+
+turn_label = Label(game_frame, text="Player 1's turn - CURRENT LETTER: A", font=("Arial", 15), height=2)
+turn_label.pack(pady=5)
+
+board_frame = Frame(game_frame)
+board_frame.pack()
+
+buttons = [[None] * 4 for _ in range(4)]
+for row in range(4):
+    for column in range(4):
+        buttons[row][column] = Button(
+            board_frame, text="", font=("Arial", 18, "bold"), width=4, height=2,
+            command=lambda row=row, column=column: on_click(row, column))
         buttons[row][column].grid(row=row, column=column)
+
+bottom_bar = Frame(game_frame)
+bottom_bar.pack(side=BOTTOM, pady=12)
+
+next_button = Button(bottom_bar, text="Next Round", font=("Arial", 14),
+                     state=DISABLED, command=next_action)
+next_button.pack(side=LEFT, padx=6)
+
+Button(bottom_bar, text="Menu", font=("Arial", 14),
+       command=back_to_menu).pack(side=LEFT, padx=6)
 
 window.mainloop()
