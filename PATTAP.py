@@ -1,9 +1,36 @@
 from tkinter import *
+from ai import GameAI
+
+
+# ---------- GAME ----------
+game = GameAI()
+
+current_round = 1
+
 
 # ---------- Screen switching ----------
 def start_game(selected_mode):
+    global current_round
+
+    current_round = 1
+
+    # Reset scores when starting a new game
+    game.player_score = 0
+    game.ai_score = 0
+
+    # Start first round
+    game.start_round()
+
     menu_frame.pack_forget()
     game_frame.pack(fill=BOTH, expand=True)
+
+    # Update game display
+    update_round()
+    update_score()
+    update_turn()
+    update_board()
+
+    next_button.config(state=DISABLED)
 
 
 def back_to_menu():
@@ -11,13 +38,251 @@ def back_to_menu():
     menu_frame.pack(fill=BOTH, expand=True)
 
 
-# ---------- Placeholder handlers ----------
+# ---------- Board display ----------
+def update_board():
+
+    board = game.get_board()
+
+    for row in range(4):
+        for column in range(4):
+
+            buttons[row][column].config(
+                text=board[row][column]
+            )
+
+
+# ---------- Round display ----------
+def update_round():
+
+    round_label.config(
+        text=f"Round {current_round} / 3"
+    )
+
+
+# ---------- Score display ----------
+def update_score():
+
+    player_score, ai_score = game.get_scores()
+
+    player_target, ai_target = game.get_targets()
+
+    score_label.config(
+        text=f"Player 1 ({player_target}): {player_score}"
+             f"     AI ({ai_target}): {ai_score}"
+    )
+
+
+# ---------- Turn display ----------
+def update_turn():
+
+    if game.round_over:
+        return
+
+    letter = game.get_current_letter()
+
+    if game.current_turn == "player":
+
+        turn_label.config(
+            text=f"Player 1's turn - CURRENT LETTER: {letter}"
+        )
+
+    else:
+
+        turn_label.config(
+            text=f"AI's turn - CURRENT LETTER: {letter}"
+        )
+
+
+# ---------- Disable board ----------
+def disable_board():
+
+    for row in range(4):
+        for column in range(4):
+
+            buttons[row][column].config(
+                state=DISABLED
+            )
+
+
+# ---------- Enable board ----------
+def enable_board():
+
+    for row in range(4):
+        for column in range(4):
+
+            buttons[row][column].config(
+                state=NORMAL
+            )
+
+
+# ---------- Check round result ----------
+def check_round_result():
+
+    if not game.round_over:
+        return False
+
+    winner = game.get_round_winner()
+
+    if winner == "player":
+
+        turn_label.config(
+            text="Player 1 wins the round!"
+        )
+
+    elif winner == "ai":
+
+        turn_label.config(
+            text="AI wins the round!"
+        )
+
+    elif winner == "tie":
+
+        turn_label.config(
+            text="Round ended in a tie!"
+        )
+
+    update_board()
+    update_score()
+
+    disable_board()
+
+    # ---------- Check Match ----------
+    if current_round == 3:
+
+        match_winner = game.get_match_winner()
+
+        if match_winner == "player":
+
+            turn_label.config(
+                text="Player 1 wins the match!"
+            )
+
+        elif match_winner == "ai":
+
+            turn_label.config(
+                text="AI wins the match!"
+            )
+
+        else:
+
+            turn_label.config(
+                text="The match is a tie!"
+            )
+
+        next_button.config(
+            state=DISABLED
+        )
+
+    else:
+
+        next_button.config(
+            state=NORMAL
+        )
+
+    return True
+
+
+# ---------- Player board click ----------
 def on_click(row, column):
-    pass
+
+    # Only allow clicking during Player 1's turn
+    if game.current_turn != "player":
+        return
+
+    # Do nothing if round is already over
+    if game.round_over:
+        return
+
+    # Try to place player's letter
+    successful = game.place_player_letter(
+        row,
+        column
+    )
+
+    # Invalid move
+    if not successful:
+        return
+
+    # Update board
+    update_board()
+
+    # Update score
+    update_score()
+
+    # Check if player ended the round
+    if check_round_result():
+        return
+
+    # Update turn
+    update_turn()
+
+    # ---------- AI Turn ----------
+    window.after(
+        500,
+        ai_move
+    )
 
 
+# ---------- AI move ----------
+def ai_move():
+
+    # Make sure the round is still active
+    if game.round_over:
+        return
+
+    # Make sure it is actually the AI's turn
+    if game.current_turn != "ai":
+        return
+
+    # Update turn label
+    update_turn()
+
+    # Make AI move
+    move = game.make_ai_move()
+
+    if move is None:
+        return
+
+    # Update board
+    update_board()
+
+    # Update score
+    update_score()
+
+    # Check round result
+    if check_round_result():
+        return
+
+    # Return to Player 1
+    update_turn()
+
+
+# ---------- Next round ----------
 def next_action():
-    pass
+    global current_round
+
+    # Only allow up to 3 rounds
+    if current_round >= 3:
+        return
+
+    current_round += 1
+
+    # Start new round
+    game.start_round()
+
+    # Update display
+    update_round()
+    update_score()
+    update_turn()
+    update_board()
+
+    # Enable board
+    enable_board()
+
+    # Disable Next Round
+    next_button.config(
+        state=DISABLED
+    )
 
 
 # ---------- WINDOW ----------
