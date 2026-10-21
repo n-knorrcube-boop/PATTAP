@@ -7,7 +7,27 @@ LETTER_SEQUENCE = ("A", "P", "T")
 
 
 # =========================================================
-#  GAME LOGIC — PASS & PLAY
+#  THEME  (change these to restyle the whole game)
+# =========================================================
+
+FONT = "Comic Sans MS"
+
+BG = "#ffe4ee"
+CARD = "#fff5f9"
+CELL_FILLED = "#ffd1e3"
+CELL_HOVER = "#ffc2da"
+BTN = "#ff7fb0"
+BTN_HOVER = "#ff5c9a"
+BTN_TEXT = "#ffffff"
+TEXT = "#7a2e4d"
+SUBTLE = "#b0627f"
+
+COLOR_P1 = "#e0357a"
+COLOR_P2 = "#7c4dff"
+
+
+# =========================================================
+#  GAME LOGIC FOR — PASS & PLAY
 # =========================================================
 
 class PatTapGame:
@@ -93,7 +113,7 @@ class PatTapGame:
 
 
 # =========================================================
-#  GAME LOGIC — SOLO
+#  GAME LOGIC FOR — SOLO
 # =========================================================
 
 class GameAI:
@@ -274,8 +294,31 @@ solo_round = 1
 #  UI HELPERS
 # =========================================================
 
-COLOR_P1 = "#1f6feb"
-COLOR_P2 = "#d7263d"
+def make_button(parent, text, command, size=16, width=None):
+    #HOVER
+    kw = dict(text=text, command=command,
+              font=(FONT, size, "bold"),
+              bg=BTN, fg=BTN_TEXT,
+              activebackground=BTN_HOVER, activeforeground=BTN_TEXT,
+              disabledforeground="#ffd9e8",
+              relief="flat", bd=0, padx=14, pady=6, cursor="hand2")
+    if width:
+        kw["width"] = width
+    b = tk.Button(parent, **kw)
+    b.bind("<Enter>", lambda e: b.config(bg=BTN_HOVER)
+           if str(b["state"]) == "normal" else None)
+    b.bind("<Leave>", lambda e: b.config(bg=BTN))
+    return b
+
+
+def cell_bg(btn_text):
+    return CELL_FILLED if btn_text else CARD
+
+
+def style_cell(btn, text, owner_color):
+    btn.config(text=text, bg=cell_bg(text),
+               fg=owner_color, disabledforeground=owner_color,
+               activebackground=cell_bg(text))
 
 
 def refresh_ui():
@@ -288,21 +331,21 @@ def refresh_ui():
 
 
 def refresh_pass_ui():
-    round_label.config(text=f"Round {game.round_number} / {TOTAL_ROUNDS}")
-    score_label.config(text=f"Player 1: {game.scores[0]}     "
-                            f"Player 2: {game.scores[1]}")
+    turn_label.config(
+        text=f"Player {game.current_player + 1}'s turn\n──────────\nCurrent letter: {game.get_next_letter()}")
 
     for r in range(GRID_SIZE):
         for c in range(GRID_SIZE):
             owner = game.placed_by[r][c]
             btn = buttons[r][c]
-            btn.config(text=game.grid[r][c] or "", state=tk.NORMAL)
-            btn.config(fg={0: COLOR_P1, 1: COLOR_P2}.get(owner, "black"))
+            btn.config(state=tk.NORMAL)
+            style_cell(btn, game.grid[r][c] or "",
+                       {0: COLOR_P1, 1: COLOR_P2}.get(owner, TEXT))
 
     if game.round_over:
         turn_label.config(text=(
-            "Player 1 wins the round!" if game.round_winner == 0
-            else "Player 2 wins the round!" if game.round_winner == 1
+            "Player 1 wins the round! ✿" if game.round_winner == 0
+            else "Player 2 wins the round! ✿" if game.round_winner == 1
             else "Round ended in a tie!"
         ))
         disable_board()
@@ -313,12 +356,12 @@ def refresh_pass_ui():
         else:
             next_button.config(state=tk.NORMAL)
     else:
-        turn_label.config(text=f"Player {game.current_player + 1}'s turn - "
-                               f"CURRENT LETTER: {game.get_next_letter()}")
+        turn_label.config(text=f"---\nPlayer {game.current_player + 1}'s turn\n----\n"                
+                               f"Current letter: {game.get_next_letter()}")
 
 
 def refresh_solo_ui():
-    round_label.config(text=f"Round {solo_round} / {TOTAL_ROUNDS}")
+    round_label.config(text=f"✿ Round {solo_round} / {TOTAL_ROUNDS} ✿")
     p, a = game.get_scores()
     pt, at = game.get_targets()
     score_label.config(text=f"Player ({pt}): {p}     AI ({at}): {a}")
@@ -326,23 +369,19 @@ def refresh_solo_ui():
     for r in range(GRID_SIZE):
         for c in range(GRID_SIZE):
             owner = game.placed_by[r][c]
-            btn = buttons[r][c]
-            btn.config(text=game.board[r][c] or "")
-            if owner == "player":
-                btn.config(fg=COLOR_P1)
-            elif owner == "ai":
-                btn.config(fg=COLOR_P2)
-            else:
-                btn.config(fg="black")
+            color = (COLOR_P1 if owner == "player"
+                     else COLOR_P2 if owner == "ai" else TEXT)
+            style_cell(buttons[r][c], game.board[r][c] or "", color)
 
     if game.round_over:
         return
     letter = game.get_current_letter()
     turn_label.config(
-        text=(f"Player's turn - CURRENT LETTER: {letter}"
+        text=(f"Player's turn\n──────────\nCurrent letter: {letter}"
               if game.current_turn == "player"
-              else f"AI's turn - CURRENT LETTER: {letter}")
+              else f"AI's turn\n──────────\nCurrent letter: {letter}")
     )
+
 
 
 def disable_board():
@@ -485,8 +524,8 @@ def check_solo_round_result():
         return False
     w = game.get_round_winner()
     turn_label.config(text={
-        "player": "Player wins the round!",
-        "ai": "AI wins the round!",
+        "player": "Player wins the round! ✿",
+        "ai": "AI wins the round! ✿",
         "tie": "Round ended in a tie!",
     }.get(w, ""))
     refresh_ui()
@@ -538,22 +577,33 @@ def _on_mousewheel_linux(event):
 # =========================================================
 
 window = tk.Tk()
-window.title("PAT/TAP")
-window.geometry("460x560")
+window.title("PAT/TAP ♡")
+window.geometry("450x650")
 window.resizable(False, False)
+window.configure(bg=BG)
+
+# default colors
+window.option_add("*Frame.Background", BG)
+window.option_add("*Label.Background", BG)
+window.option_add("*Label.Foreground", TEXT)
+window.option_add("*Canvas.Background", BG)
 
 # ---------- MENU ----------
 menu_frame = tk.Frame(window)
 menu_frame.pack(fill=tk.BOTH, expand=True)
 
+tk.Label(menu_frame, text="✿  ♡  ✿",
+         font=(FONT, 20), fg=BTN).pack(pady=(60, 0))
 tk.Label(menu_frame, text="PAT/TAP",
-         font=("Arial", 44, "bold")).pack(pady=(70, 40))
-tk.Button(menu_frame, text="Solo", font=("Arial", 18), width=14,
-          command=lambda: start_game("solo")).pack(pady=8)
-tk.Button(menu_frame, text="Pass & Play", font=("Arial", 18), width=14,
-          command=lambda: start_game("pass")).pack(pady=8)
-tk.Button(menu_frame, text="Tutorial", font=("Arial", 18), width=14,
-          command=show_tutorial).pack(pady=8)
+         font=(FONT, 46, "bold"), fg=COLOR_P1).pack(pady=(0, 4))
+tk.Label(menu_frame, text="strategic word placing game.",
+         font=(FONT, 12, "italic"), fg=SUBTLE).pack(pady=(0, 32))
+make_button(menu_frame, "Solo", lambda: start_game("solo"),
+            size=18, width=14).pack(pady=8)
+make_button(menu_frame, "Pass & Play", lambda: start_game("pass"),
+            size=18, width=14).pack(pady=8)
+make_button(menu_frame, "Tutorial", show_tutorial,
+            size=18, width=14).pack(pady=8)
 
 
 # ---------- TUTORIAL ----------
@@ -587,10 +637,10 @@ tutorial_canvas.bind_all("<Button-4>", _on_mousewheel_linux)
 tutorial_canvas.bind_all("<Button-5>", _on_mousewheel_linux)
 
 # --- Tutorial content ---
-tk.Label(tutorial_content, text="HOW TO PLAY",
-         font=("Arial", 22, "bold")).pack(pady=(15, 5))
+tk.Label(tutorial_content, text="🌷 HOW TO PLAY 🌷",
+         font=(FONT, 22, "bold"), fg=COLOR_P1).pack(pady=(15, 5))
 tk.Label(tutorial_content, text="1. Build one of these words in order:",
-         font=("Arial", 12, "bold")).pack(anchor="w", padx=20, pady=(10, 4))
+         font=(FONT, 12, "bold")).pack(anchor="w", padx=20, pady=(10, 4))
 
 words_frame = tk.Frame(tutorial_content)
 words_frame.pack(pady=2)
@@ -599,14 +649,15 @@ words_frame.pack(pady=2)
 def word_row(parent, letters, label_text):
     row = tk.Frame(parent)
     row.pack(pady=3)
-    tk.Label(row, text=label_text, font=("Arial", 11, "bold"),
-             width=12, anchor="w").pack(side="left")
+    tk.Label(row, text=label_text, font=(FONT, 11, "bold"),
+             width=8, anchor="w").pack(side="left")
     for i, ch in enumerate(letters):
-        tk.Label(row, text=ch, font=("Arial", 18, "bold"),
-                 width=3, height=1, relief="ridge", borderwidth=2,
-                 bg="#f0f0f0").pack(side="left", padx=2)
+        tk.Label(row, text=ch, font=(FONT, 18, "bold"),
+                 width=3, height=1, bg=CARD, fg=COLOR_P1).pack(side="left",
+                                                               padx=2)
         if i < len(letters) - 1:
-            tk.Label(row, text="→", font=("Arial", 14)).pack(side="left", padx=1)
+            tk.Label(row, text="→", font=(FONT, 14),
+                     fg=SUBTLE).pack(side="left", padx=1)
 
 
 word_row(words_frame, "PAT", "Word A:")
@@ -615,39 +666,38 @@ word_row(words_frame, "TAP", "Word B:")
 tk.Label(tutorial_content,
          text="The letters must appear in this exact order,\n"
               "read either left-to-right or top-to-bottom.",
-         font=("Arial", 10, "italic"),
-         fg="#555555").pack(pady=(2, 6))
+         font=(FONT, 10, "italic"),
+         fg=SUBTLE).pack(pady=(2, 6))
 
 tk.Label(tutorial_content, text="2. Letters drop into the grid in this cycle:",
-         font=("Arial", 12, "bold")).pack(anchor="w", padx=20, pady=(10, 2))
+         font=(FONT, 12, "bold")).pack(anchor="w", padx=20, pady=(10, 2))
 
 seq_frame = tk.Frame(tutorial_content)
 seq_frame.pack(pady=4)
 
 
 def letter_box(parent, letter):
-    tk.Label(parent, text=letter, font=("Arial", 20, "bold"),
-             width=3, height=1, relief="ridge", borderwidth=2,
-             bg="#f0f0f0").pack(side="left", padx=4)
+    tk.Label(parent, text=letter, font=(FONT, 20, "bold"),
+             width=3, height=1, bg=CARD,
+             fg=COLOR_P1).pack(side="left", padx=4)
 
 
 letter_box(seq_frame, "A")
-tk.Label(seq_frame, text="→", font=("Arial", 16)).pack(side="left", padx=2)
+tk.Label(seq_frame, text="→", font=(FONT, 16), fg=SUBTLE).pack(side="left", padx=2)
 letter_box(seq_frame, "P")
-tk.Label(seq_frame, text="→", font=("Arial", 16)).pack(side="left", padx=2)
+tk.Label(seq_frame, text="→", font=(FONT, 16), fg=SUBTLE).pack(side="left", padx=2)
 letter_box(seq_frame, "T")
-tk.Label(seq_frame, text="→", font=("Arial", 16)).pack(side="left", padx=2)
-letter_box(seq_frame, "A")
-tk.Label(seq_frame, text="…", font=("Arial", 16)).pack(side="left", padx=2)
+tk.Label(seq_frame, text="→", font=(FONT, 16))
+tk.Label(seq_frame, text="…", font=(FONT, 16), fg=SUBTLE).pack(side="left", padx=2)
 
 tk.Label(tutorial_content,
          text="Players take turns placing the next letter\n"
               "wherever they want on the board.",
-         font=("Arial", 10, "italic"),
-         fg="#555555").pack(pady=(2, 6))
+         font=(FONT, 10, "italic"),
+         fg=SUBTLE).pack(pady=(2, 6))
 
 tk.Label(tutorial_content, text="3. Example — PAT formed horizontally:",
-         font=("Arial", 12, "bold")).pack(anchor="w", padx=20, pady=(10, 2))
+         font=(FONT, 12, "bold")).pack(anchor="w", padx=20, pady=(10, 2))
 
 example_pat = tk.Frame(tutorial_content)
 example_pat.pack(pady=4)
@@ -658,20 +708,21 @@ sample_pat = [
     ["",  "",  "",  ""],
 ]
 sample_pat_colors = [
-    [COLOR_P1, COLOR_P2, COLOR_P1, "black"],
-    ["black", "black", "black", "black"],
-    ["black", "black", "black", "black"],
-    ["black", "black", "black", "black"],
+    [COLOR_P1, COLOR_P2, COLOR_P1, TEXT],
+    [TEXT, TEXT, TEXT, TEXT],
+    [TEXT, TEXT, TEXT, TEXT],
+    [TEXT, TEXT, TEXT, TEXT],
 ]
 for r in range(4):
     for c in range(4):
         tk.Label(example_pat, text=sample_pat[r][c],
                  fg=sample_pat_colors[r][c], width=3, height=1,
-                 font=("Arial", 16, "bold"), relief="ridge",
-                 borderwidth=1, bg="#f0f0f0").grid(row=r, column=c)
+                 font=(FONT, 16, "bold"),
+                 bg=CELL_FILLED if sample_pat[r][c] else CARD
+                 ).grid(row=r, column=c, padx=2, pady=2)
 
 tk.Label(tutorial_content, text="4. Example — TAP formed vertically:",
-         font=("Arial", 12, "bold")).pack(anchor="w", padx=20, pady=(10, 2))
+         font=(FONT, 12, "bold")).pack(anchor="w", padx=20, pady=(10, 2))
 
 example_tap = tk.Frame(tutorial_content)
 example_tap.pack(pady=4)
@@ -682,85 +733,113 @@ sample_tap = [
     ["",  "",  "",  ""],
 ]
 sample_tap_colors = [
-    [COLOR_P1, "black", "black", "black"],
-    [COLOR_P2, "black", "black", "black"],
-    [COLOR_P1, "black", "black", "black"],
-    ["black", "black", "black", "black"],
+    [COLOR_P1, TEXT, TEXT, TEXT],
+    [COLOR_P2, TEXT, TEXT, TEXT],
+    [COLOR_P1, TEXT, TEXT, TEXT],
+    [TEXT, TEXT, TEXT, TEXT],
 ]
 for r in range(4):
     for c in range(4):
         tk.Label(example_tap, text=sample_tap[r][c],
                  fg=sample_tap_colors[r][c], width=3, height=1,
-                 font=("Arial", 16, "bold"), relief="ridge",
-                 borderwidth=1, bg="#f0f0f0").grid(row=r, column=c)
+                 font=(FONT, 16, "bold"),
+                 bg=CELL_FILLED if sample_tap[r][c] else CARD
+                 ).grid(row=r, column=c, padx=2, pady=2)
 
-tk.Label(tutorial_content,
-         text="Blue = Player 1    Red = Player 2",
-         font=("Arial", 10, "italic"),
-         fg="#555555").pack(pady=(2, 4))
+legend = tk.Frame(tutorial_content)
+legend.pack(pady=(2, 4))
+tk.Label(legend, text="Pink = Player 1", font=(FONT, 10, "bold"),
+         fg=COLOR_P1).pack(side="left", padx=8)
+tk.Label(legend, text="Purple = Player 2", font=(FONT, 10, "bold"),
+         fg=COLOR_P2).pack(side="left", padx=8)
 
 tk.Label(tutorial_content, text="5. Scoring:",
-         font=("Arial", 12, "bold")).pack(anchor="w", padx=20, pady=(8, 2))
+         font=(FONT, 12, "bold")).pack(anchor="w", padx=20, pady=(8, 2))
 tk.Label(tutorial_content,
-         text=("The point goes to whoever placed the LAST (3rd)\n"
-               "letter that completed the word.\n"
-               "In the examples above, Player 1 placed the final letter."),
-         font=("Arial", 10),
-         fg="#333333").pack(pady=(0, 10))
-tk.Button(tutorial_content, text="Back to Menu", font=("Arial", 14),
-          command=close_tutorial).pack(pady=(4, 20))
+         text=("The point goes to the owner of the FIRST FORMED WORD.\n"
+               "Whoever placed the last letter of the winning word do not matter!\n"),
+         font=(FONT, 10),
+         fg=TEXT).pack(pady=(0, 10))
+
+tk.Label(tutorial_content, text="TIP:",
+         font=(FONT, 12, "bold")).pack(anchor="w", padx=20, pady=(8, 2))
+tk.Label(tutorial_content,
+         text=("Always watch out for the assigned words,\n they may or may not change during matches👀\n"),
+
+         font=(FONT, 10),
+         fg=TEXT).pack(pady=(0, 10))
+
+
+make_button(tutorial_content, "Back to Menu", close_tutorial,
+            size=14).pack(pady=(4, 20))
 
 
 # ---------- GAME SCREEN ----------
 game_frame = tk.Frame(window)
 
-round_label = tk.Label(game_frame, text="Round 1 / 3",
-                       font=("Arial", 16, "bold"))
-round_label.pack(pady=(10, 0))
+round_label = tk.Label(game_frame, text="✿ Round 1 / 3 ✿",
+                       font=(FONT, 18, "bold"), fg=COLOR_P1)
+round_label.pack(pady=(6, 0))
 score_label = tk.Label(game_frame, text="Player 1: 0     Player 2: 0",
-                       font=("Arial", 13))
-score_label.pack()
+                       font=(FONT, 13), fg=SUBTLE)
+score_label.pack(pady=(0, 2))
 turn_label = tk.Label(game_frame,
-                      text="Player 1's turn - CURRENT LETTER: A",
-                      font=("Arial", 15), height=2)
-turn_label.pack(pady=5)
+                      text="Player 1's turn\n──────────\nCurrent letter: A",
+                      font=(FONT, 13, "bold"), height=4)
+turn_label.pack(pady=3)
 
 board_frame = tk.Frame(game_frame)
 board_frame.pack()
 
+
+def _cell_enter(btn):
+    if str(btn["state"]) == "normal" and not btn["text"]:
+        btn.config(bg=CELL_HOVER)
+
+
+def _cell_leave(btn):
+    btn.config(bg=cell_bg(btn["text"]))
+
+
 buttons = [[None] * 4 for _ in range(4)]
 for row in range(4):
     for column in range(4):
-        buttons[row][column] = tk.Button(
-            board_frame, text="", font=("Arial", 18, "bold"),
-            width=4, height=2,
+        b = tk.Button(
+            board_frame, text="", font=(FONT, 20, "bold"),
+            width=4, height=2, bg=CARD, fg=TEXT,
+            activebackground=CELL_HOVER, relief="flat", bd=0,
+            highlightthickness=0, cursor="hand2",
             command=lambda r=row, c=column: on_click(r, c))
-        buttons[row][column].grid(row=row, column=column)
+        b.grid(row=row, column=column, padx=2, pady=2)
+        b.bind("<Enter>", lambda e, btn=b: _cell_enter(btn))
+        b.bind("<Leave>", lambda e, btn=b: _cell_leave(btn))
+        buttons[row][column] = b
 
 bottom_bar = tk.Frame(game_frame)
-bottom_bar.pack(side=tk.BOTTOM, pady=12)
-next_button = tk.Button(bottom_bar, text="Next Round",
-                        font=("Arial", 14), state=tk.DISABLED,
-                        command=next_action)
+bottom_bar.pack(side=tk.BOTTOM, pady=8)
+next_button = make_button(bottom_bar, "Next Round", next_action, size=14)
+next_button.config(state=tk.DISABLED)
 next_button.pack(side=tk.LEFT, padx=6)
-tk.Button(bottom_bar, text="Menu", font=("Arial", 14),
-          command=back_to_menu).pack(side=tk.LEFT, padx=6)
+make_button(bottom_bar, "Menu", back_to_menu, size=14).pack(side=tk.LEFT, padx=6)
 
 
-# ---------- RESULTS SCREEN ----------
+# ---------- RESULTS SCREEN YAAYAYAYAYASSYAY----------
 results_frame = tk.Frame(window)
 
-tk.Label(results_frame, text="GAME OVER",
-         font=("Arial", 32, "bold")).pack(pady=(80, 20))
+tk.Label(results_frame, text="✿  ♡  ✿",
+         font=(FONT, 20), fg=BTN).pack(pady=(70, 0))
+tk.Label(results_frame, text="MATCH OVER",
+         font=(FONT, 32, "bold"), fg=COLOR_P1).pack(pady=(0, 20))
 results_winner_label = tk.Label(results_frame, text="",
-                                font=("Arial", 20, "bold"))
+                                font=(FONT, 20, "bold"))
 results_winner_label.pack(pady=(0, 30))
 results_score_label = tk.Label(results_frame, text="",
-                               font=("Arial", 16), justify="center")
+                               font=(FONT, 16), justify="center",
+                               fg=SUBTLE)
 results_score_label.pack(pady=(0, 40))
-tk.Button(results_frame, text="Try Again", font=("Arial", 16), width=14,
-          command=try_again).pack(pady=8)
-tk.Button(results_frame, text="Menu", font=("Arial", 16), width=14,
-          command=back_to_menu).pack(pady=8)
+make_button(results_frame, "Try Again", try_again,
+            size=16, width=14).pack(pady=8)
+make_button(results_frame, "Menu", back_to_menu,
+            size=16, width=14).pack(pady=8)
 
 window.mainloop()
